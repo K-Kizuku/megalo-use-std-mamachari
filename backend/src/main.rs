@@ -28,6 +28,7 @@ use log::{Level, logger};
 
 use megalo_use_std_mamachari::chat_server;
 use megalo_use_std_mamachari::chat_session;
+use megalo_use_std_mamachari::routes;
 
 mod auth;
 mod errors;
@@ -96,6 +97,7 @@ async fn main() -> std::io::Result<()> {
     let chat_server = chat_server::ChatServer::new(app_state.clone()).start();
     info!("HTTP Server Started at http://localhost:8080");
     HttpServer::new(move || {
+        let auth = HttpAuthentication::bearer(validator);
         App::new()
             .app_data(web::Data::from(app_state.clone()))
             .service(web::resource("/").to(index))
@@ -104,6 +106,9 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/chat").to(chat_index))
             .route("/chat_count", web::get().to(get_count))
             .route("/chat_ws", web::get().to(chat_route))
+            // firebase
+            .service(web::scope("/api").wrap(auth).configure(routes::api_routes))
+            .configure(routes::health_routes)
 
             .service(Files::new("/test", "./test"))
             .wrap(Logger::default())
