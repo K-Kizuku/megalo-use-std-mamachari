@@ -1,0 +1,13 @@
+version: '3'
+services:
+  reverse-proxy:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    image: tiangolo/nginx-rtmp:latest
+    volumes:
+      - ./mount/:/etc/nginx
+      - ./mount/conf.d:/etc/nginx/conf.d
+      - ./mount/sites-enabled:/etc/nginx/sites-enabled
+      - ./mount/log:/var/log
+    ports:
+      - "80:80"
