@@ -69,7 +69,7 @@ pub fn home() -> Html {
     // let link_sign_in = Callback::from(move |_| navigator.push(&Route::SignIn));
     // let link_sign_up = Callback::from(move |_| navigator.push(&Route::SignUp));
     html! {
-        <div>
+        <div class="home">
             {link_sign_in_button}
             {link_sign_up_button}
         </div>
@@ -135,7 +135,7 @@ pub fn sign_in() -> Html {
             });
         });
             html!{
-                <button {onclick}>{"サインイン"}</button>
+                <button class="primary-button" {onclick}>{"サインイン"}</button>
             }
         };
     let input_email = {
@@ -178,15 +178,19 @@ pub fn sign_in() -> Html {
 
 
     html! {
-        <div>
+        <div class="signin">
             <h1>{ "サインイン" }</h1>
-            <div>{"Eメール"}</div>
+            <div>
+            <p>{"Eメール"}</p>
             {input_email}
-            <div>{"パスワード"}</div>
+            </div>
+            <div>
+            <p>{"パスワード"}</p>
             {input_password}
+            </div>
             {button_post_auth_sign_in}
 
-            <button {onclick}>{ "新規登録の方はこちら" }</button>
+            <button class="secondary-button" {onclick}>{ "新規登録の方はこちら" }</button>
             
         </div>
     }
@@ -243,7 +247,7 @@ pub fn sign_up() -> Html {
             });
         });
             html!{
-                <button {onclick}>{"サインアップ"}</button>
+                <button class="primary-button" {onclick}>{"サインアップ"}</button>
             }
         };
 
@@ -296,17 +300,23 @@ pub fn sign_up() -> Html {
 
 
     html! {
-        <div>
+        <div class="signup">
             <h1>{ "サインアップ" }</h1>
-            <div>{"ユーザーネーム"}</div>
-            {input_name}
-            <div>{"Eメール"}</div>
-            {input_email}
-            <div>{"パスワード"}</div>
-            {input_password}
+            <div>
+              <p>{"ユーザーネーム"}</p>
+              {input_name}
+            </div>
+            <div>
+              <p>{"Eメール"}</p>
+              {input_email}
+            </div>
+            <div>
+              <p>{"パスワード"}</p>
+              {input_password}
+            </div>
             {button_post_auth_sign_up}
 
-            <button {onclick}>{ "サインインはこちら" }</button>
+            <button class="secondary-button" {onclick}>{ "サインインはこちら" }</button>
             
         </div>
     }
@@ -697,7 +707,7 @@ fn switch(routes: Route) -> Html {
 #[function_component(CustomHeader)]
 pub fn custom_header() -> Html {
     html!{
-        <div>{"ヘッダーだよ"}</div>
+        <div class="header">{"ヘッダーだよ"}</div>
     }
 }
 
