@@ -40,11 +40,11 @@ pub enum Route {
     SignUp,
     #[at("/sign_in")]
     SignIn,
-    #[at("/live_view")]
+    #[at("/stream_view")]
     Live,
     #[at("/playlist")]
     PlayList,
-    #[at("/live_info")]
+    #[at("/stream_info")]
     LiveInfo,
     #[not_found]
     #[at("/404")]
@@ -353,42 +353,23 @@ pub fn live() -> Html {
         }
         temp();
     }
-    let on_cautious_change = {
-        let input_value_handle = input_value_handle.clone();
-
-        Callback::from(move |e: MouseEvent| {
-            // When events are created the target is undefined, it's only
-            // when dispatched does the target get added.
+    use_effect_with_deps(move |_| {
+        wasm_bindgen_futures::spawn_local(async move {
             test();
-            // let target: Option<EventTarget> = e.target();
-            // // Events can bubble so this listener might catch events from child
-            // // elements which are not of type HtmlInputElement
-            // let input = target.and_then(|t| t.dyn_into::<HtmlInputElement>().ok());
-
-            // if let Some(input) = input {
-            //     input_value_handle.set(input.value());
-            // }
-        })
-    };
+        });
+        || ()
+    }, ());
 
 
     let navigator = use_navigator().unwrap();
 
-    let onclick = Callback::from(move |_| navigator.push(&Route::Home));
+    let onclick = Callback::from(move |_| navigator.push(&Route::PlayList));
 
     html! {
         <div>
-            <input />
-            <h1>{"Secure" }</h1>
-            <video controls={true} id="test"></video>
-            <button {onclick}>{ "Go Home" }</button>
-            <button onclick={on_cautious_change}>{"click"}</button>
-            // <input onchange={on_cautious_change}
-            //         id="cautious-input"
-            //         type="text"
-            //         value={input_value.clone()}
-            //     />
-            <p id="kaka">{"test"}</p>
+            <h1>{"ライブ画面" }</h1>
+            <video controls={true} id="video"></video>
+            <button {onclick}>{ "一覧表示へ" }</button>
         </div>
     }
 }
