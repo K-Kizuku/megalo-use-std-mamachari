@@ -20,6 +20,11 @@ pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder{
     };
     info!("id_token: {:?}", responce.id_token);
     info!("email: {:?}", responce.email);
+    let user_info = match auth.get_user_info(&responce.id_token).await {
+        Ok(user) => user,
+        Err(_) => return HttpResponse::Unauthorized().finish(),
+    };
+    info!("password_hash: {:?}", user_info.password_hash);
     HttpResponse::Ok().body("OK")
 }
 
@@ -34,6 +39,11 @@ pub async fn firebase_signin(payload: web::Json<User>) -> impl Responder{
     };
     info!("id_token: {:?}", responce.id_token);
     info!("email: {:?}", responce.email);
+    let user_info = match auth.get_user_info(&responce.id_token).await {
+        Ok(user) => user,
+        Err(_) => return HttpResponse::Unauthorized().finish(),
+
+    };
+    info!("local_id: {:?}", user_info.local_id);
     HttpResponse::Ok().body("OK")
 }
-
