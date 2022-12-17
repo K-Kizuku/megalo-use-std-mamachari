@@ -2,6 +2,8 @@ use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder};
 use fireauth::FireAuth;
 use serde::Deserialize;
+use crate::db::establish_connection;
+use crate::cruds::db_sign_up;
 
 #[derive(Deserialize)]
 pub struct NewUser {
@@ -31,8 +33,8 @@ pub async fn firebase_signup(payload: web::Json<NewUser>) -> impl Responder{
     info!("local_id: {:?}", responce.local_id);
     // databse function here !
     // save local_id, email, name, description
-    let conn = crate::db::establish_connection();
-    crate::cruds::db_sign_up(
+    let conn = establish_connection();
+    db_sign_up(
         &conn,
         &responce.local_id,
         &name,
