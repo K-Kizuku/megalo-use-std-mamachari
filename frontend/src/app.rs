@@ -6,9 +6,11 @@ use web_sys::{EventTarget, HtmlInputElement};
 // use wasm_bindgen;
 use wasm_bindgen::prelude::*;
 use gloo_net::http::Request;
+use reqwest;
 // use gloo_net::http::Response::json;
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 use chrono::{DateTime,Utc};
+use serde_json::json;
 
 #[derive(Clone, PartialEq, Deserialize)]
 struct Video {
@@ -67,7 +69,7 @@ pub fn home() -> Html {
     // let link_sign_in = Callback::from(move |_| navigator.push(&Route::SignIn));
     // let link_sign_up = Callback::from(move |_| navigator.push(&Route::SignUp));
     html! {
-        <div>
+        <div class="home">
             {link_sign_in_button}
             {link_sign_up_button}
         </div>
@@ -88,71 +90,241 @@ pub fn secure() -> Html {
     }
 }
 
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
+struct SignInProps {
+    email: String,
+    password: String,
+}
+
 #[function_component(SignIn)]
 pub fn sign_in() -> Html {
-    let e_mail = use_state(String::default);
-    let password = use_state(String::default);
-
+    let authorization: UseStateHandle<SignInProps> = use_state(|| SignInProps { email: String::from(""), password: String::from("") });
+    // let e_mail = use_state(String::default);
+    // let password = use_state(String::default);
     let navigator = use_navigator().unwrap();
-
-
+    
     let onclick = Callback::from(move |_| navigator.push(&Route::SignUp));
-    let post_auth_sign_in = {
-        let e_mail = e_mail.clone();
 
-        Callback::from(move |e: MouseEvent| {
+    let authorization = authorization.clone();
+
+    let button_post_auth_sign_in = {
+        // let test = SignInProps { email: "".to_string(), password: "".to_string() };
+        let authorization = authorization.clone();
+        let onclick = Callback::from(move |e: MouseEvent| {
+            let authorization = authorization.clone();
+
+            wasm_bindgen_futures::spawn_local(async move {
+                // let authorization = authorization.clone();
+                // let temp = &authorization;
+                // let auth_json = serde_json::to_string(&authorization.serialize(serializer)).unwrap();
+                // let post_data = json!(authorization);
+                // Request::post("http://httpbin.org/post").json(&authorization).await;
+                let post_data = SignInProps { email: String::from(authorization.email.clone()), password: String::from(authorization.password.clone()) };
+
+                let client = reqwest::Client::new();
+                let res = client.post("/api/signin")
+                // .body(serde_json::to_string(&authorization))
+                // .form(&authorization)
+                // .json(&serde_json::to_string(&authorization).unwrap())
+                .json(&post_data)
+                .send()
+                .await
+                .unwrap()
+                .text()
+                .await;
+            });
+        });
+            html!{
+                <button class="primary-button" {onclick}>{"サインイン"}</button>
+            }
+        };
+    let input_email = {
+        let authorization = authorization.clone();
+        let onchange = Callback::from(move |e: Event| {
+
             let input = e.target_dyn_into::<HtmlInputElement>();
 
             if let Some(input) = input {
-                // input_value_handle.set(input.value());
+                authorization.set(SignInProps {email:input.value(), password:String::from(authorization.password.clone())});
             }
-        })
-    };
-    let onchenge_email = {
-        let e_mail = e_mail.clone();
+        });
 
-        Callback::from(move |e: Event| {
+        // Callback::from(move |e: Event| {
+        //     let input = e.target_dyn_into::<HtmlInputElement>();
+
+        //     if let Some(input) = input {
+        //         authorization.set(SignInProps {email:input.value(), password:authorization.password});
+        //     }
+        // });
+        html!{
+            <input {onchange}/>
+        }
+    };
+    let input_password = 
+    {
+        let authorization = authorization.clone();
+        let onchange = Callback::from(move |e: Event| {
             let input = e.target_dyn_into::<HtmlInputElement>();
-
+    
             if let Some(input) = input {
-                e_mail.set(input.value());
-            }
-        })
-    };
+                authorization.set(SignInProps {email:String::from(authorization.email.clone()), password:input.value()});
+            };
+        }); 
+    
+    html!{
+        <input {onchange}/>
+    }
+};
 
-    let onchenge_email = {
-        let password = password.clone();
-
-        Callback::from(move |e: Event| {
-            let input = e.target_dyn_into::<HtmlInputElement>();
-
-            if let Some(input) = input {
-                password.set(input.value());
-            }
-        })
-    };
 
     html! {
-        <div>
+        <div class="signin">
             <h1>{ "サインイン" }</h1>
-            <div>{"Eメール"}</div>
-            <input />
-            <div>{"パスワード"}</div>
-            <input />
-            <button onclick={post_auth_sign_in}>{"サインイン"}</button>
+            <div>
+            <p>{"Eメール"}</p>
+            {input_email}
+            </div>
+            <div>
+            <p>{"パスワード"}</p>
+            {input_password}
+            </div>
+            {button_post_auth_sign_in}
 
-
-            <button {onclick}>{ "新規登録の方はこちら" }</button>
+            <button class="secondary-button" {onclick}>{ "新規登録の方はこちら" }</button>
             
         </div>
     }
 }
 
+
 // extern "C" {
 //     fn alert(s: &str);
 // }
+
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
+struct SignUpProps {
+    email: String,
+    password: String,
+    name: String,
+}
+
 #[function_component(SignUp)]
 pub fn sign_up() -> Html {
+    let authorization: UseStateHandle<SignUpProps> = use_state(|| SignUpProps { name: String::from(""),email: String::from(""), password: String::from("") });
+    // let e_mail = use_state(String::default);
+    // let password = use_state(String::default);
+    let navigator = use_navigator().unwrap();
+    
+    let onclick = Callback::from(move |_| navigator.push(&Route::SignUp));
+
+    let authorization = authorization.clone();
+
+    let button_post_auth_sign_up = {
+        // let test = SignInProps { email: "".to_string(), password: "".to_string() };
+        let authorization = authorization.clone();
+        let onclick = Callback::from(move |e: MouseEvent| {
+            let authorization = authorization.clone();
+
+            wasm_bindgen_futures::spawn_local(async move {
+                // let authorization = authorization.clone();
+                // let temp = &authorization;
+                // let auth_json = serde_json::to_string(&authorization.serialize(serializer)).unwrap();
+                // let post_data = json!(authorization);
+                // Request::post("http://httpbin.org/post").json(&authorization).await;
+                let post_data = SignUpProps { name: String::from(authorization.name.clone()), email: String::from(authorization.email.clone()), password: String::from(authorization.password.clone()) };
+
+                let client = reqwest::Client::new();
+                let res = client.post("/api/signup")
+                // .body(serde_json::to_string(&authorization))
+                // .form(&authorization)
+                // .json(&serde_json::to_string(&authorization).unwrap())
+                .json(&post_data)
+                .send()
+                .await
+                .unwrap()
+                .text()
+                .await;
+            });
+        });
+            html!{
+                <button class="primary-button" {onclick}>{"サインアップ"}</button>
+            }
+        };
+
+    let input_name = {
+        let authorization = authorization.clone();
+        let onchange = Callback::from(move |e: Event| {
+
+            let input = e.target_dyn_into::<HtmlInputElement>();
+
+            if let Some(input) = input {
+                authorization.set(SignUpProps {name: input.value(), email:String::from(authorization.email.clone()), password:String::from(authorization.password.clone())});
+            }
+        });
+
+        html!{
+            <input {onchange}/>
+        }
+    };
+        
+    let input_email = {
+        let authorization = authorization.clone();
+        let onchange = Callback::from(move |e: Event| {
+
+            let input = e.target_dyn_into::<HtmlInputElement>();
+
+            if let Some(input) = input {
+                authorization.set(SignUpProps {name:String::from(authorization.name.clone()), email:input.value(), password:String::from(authorization.password.clone())});
+            }
+        });
+
+        html!{
+            <input {onchange}/>
+        }
+    };
+    let input_password = 
+    {
+        let authorization = authorization.clone();
+        let onchange = Callback::from(move |e: Event| {
+            let input = e.target_dyn_into::<HtmlInputElement>();
+    
+            if let Some(input) = input {
+                authorization.set(SignUpProps {name:String::from(authorization.name.clone()),email:String::from(authorization.email.clone()), password:input.value()});
+            };
+        }); 
+    
+    html!{
+        <input {onchange}/>
+    }
+};
+
+
+    html! {
+        <div class="signup">
+            <h1>{ "サインアップ" }</h1>
+            <div>
+              <p>{"ユーザーネーム"}</p>
+              {input_name}
+            </div>
+            <div>
+              <p>{"Eメール"}</p>
+              {input_email}
+            </div>
+            <div>
+              <p>{"パスワード"}</p>
+              {input_password}
+            </div>
+            {button_post_auth_sign_up}
+
+            <button class="secondary-button" {onclick}>{ "サインインはこちら" }</button>
+            
+        </div>
+    }
+}
+
+
+#[function_component(Live)]
+pub fn live() -> Html {
     let input_value_handle = use_state(String::default);
     let input_value = (*input_value_handle).clone();
     fn test() {
@@ -523,7 +695,7 @@ fn switch(routes: Route) -> Html {
             <SignUp />
         },
         Route::Live => html!{
-            <SignIn />
+            <Live />
         },
         Route::PlayList => html! {
             <PlayList />
@@ -532,11 +704,22 @@ fn switch(routes: Route) -> Html {
     }
 }
 
+#[function_component(CustomHeader)]
+pub fn custom_header() -> Html {
+    html!{
+        <div class="header">{"ヘッダーだよ"}</div>
+    }
+}
+
+
 #[function_component(App)]
 pub fn app() -> Html {
     html! {
-        <BrowserRouter>
-            <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
-        </BrowserRouter>
+        <>
+            <CustomHeader />
+            <BrowserRouter>
+                <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
+            </BrowserRouter>
+        </>
     }
 }
