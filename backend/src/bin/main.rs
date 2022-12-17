@@ -36,12 +36,7 @@ use log::{Level, logger};
 
 use megalo_use_std_mamachari::chat_server;
 use megalo_use_std_mamachari::chat_session;
-use megalo_use_std_mamachari::routes;
-use megalo_use_std_mamachari::db::establish_connection;
-
-mod auth;
-mod errors;
-
+use megalo_use_std_mamachari::auth;
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -91,7 +86,7 @@ async fn main() -> std::io::Result<()> {
     logger::init();
     let app_state = Arc::new(AtomicUsize::new(0));
     let chat_server = chat_server::ChatServer::new(app_state.clone()).start();
-    info!("HTTP Server Started at http://localhost:8080");
+    info!("HTTP Server Started at http://localhost:8000");
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::from(app_state.clone()))
@@ -110,7 +105,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
     })
     .workers(2)
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8000))?
     .run()
     .await
 }
