@@ -14,11 +14,17 @@ actix-web-actors = "4.1.0"
 actix-web-httpauth = "0.6.0"
 alcoholic_jwt = "4091.0.0"
 anyhow = "1.0.66"
-arc = "0.0.1"
-chrono = {version = "0.4.23", features = ["serde"] }
-derive_more = "0.99.17"
-diesel = "2.0.2"
 dotenv = "0.15.0"
+dataloader = "0.14.0"
+r2d2 = "0.8.9"
+uuid = { version = "0.8" , features = ["serde", "v4"] }
+pwhash = "1.0.0"
+jsonwebtoken = "8.1.1"
+arc = "0.0.1"
+chrono = {version = "0.4", features = ["serde"] }
+derive_more = "0.99.17"
+#diesel = { version = "2.0.2", features = ["postgres"] }
+diesel = { version = "1.4.4", features = ["postgres", "chrono"] }
 env_logger = "0.10.0"
 fireauth = "0.1.5"
 http = "0.2.8"
@@ -29,3 +35,4 @@ serde = {version = "1.0.151", features = ["derive"] }
 serde_json = "1.0.89"
 time = "0.3.17"
 url = "2.3.1"
+

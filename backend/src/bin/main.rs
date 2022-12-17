@@ -1,3 +1,17 @@
+
+use actix_web::{
+    App,HttpServer,Responder,HttpResponse,get,Error,
+    middleware::{
+        Compress,
+        Logger,
+    },
+    web::{
+        self,
+        Data,
+    }, HttpRequest,
+};
+use dotenv::dotenv;
+
 #[macro_use]
 extern crate log;
 extern crate env_logger as logger;
@@ -13,11 +27,6 @@ use std::{
 
 use actix::*;
 use actix_files::{Files, NamedFile};
-use actix_web::{
-    middleware::Logger,
-    dev::ServiceRequest,
-    web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder,
-};
 use actix_web_actors::ws::{self, start};
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
 use actix_web_httpauth::extractors::AuthenticationError;
@@ -27,10 +36,7 @@ use log::{Level, logger};
 
 use megalo_use_std_mamachari::chat_server;
 use megalo_use_std_mamachari::chat_session;
-use megalo_use_std_mamachari::routes;
-
-mod auth;
-mod errors;
+use megalo_use_std_mamachari::auth;
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -72,6 +78,8 @@ async fn get_count(count: web::Data<AtomicUsize>) -> impl Responder {
 // ##### main ##### //
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+     // .envに記述された環境変数の読み込み.
+    dotenv().ok();
     //env::set_var("RUST_LOG", "trace");
     env::set_var("RUST_LOG", "info");
     dotenv::dotenv().ok();
@@ -82,6 +90,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::from(app_state.clone()))
+            .app_data(web::Data::new(chat_server.clone()))
             .service(web::resource("/").to(index))
             // chat
             .app_data(web::Data::new(chat_server.clone()))
