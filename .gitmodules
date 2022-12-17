@@ -1,0 +1,3 @@
+[submodule "xiu"]
+	path = xiu
+	url = https://github.com/harlanc/xiu.git
