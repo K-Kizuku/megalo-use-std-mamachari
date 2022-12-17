@@ -1,0 +1,33 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  deploy:
+    name: deploy_to_sasami
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: create ssh config file
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_sasami
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          config: |
+            Host sasami
+              HostName 118.27.102.227
+              User root
+              Port 14217
+              IdentityFile ~/.ssh/id_sasami
+      - name: rsync
+        run: rsync -av ./ sasami:/opt/piece_live
+
+      - name: frontend deploy
+        run: ssh sasami "cd /opt/piece_live/frontend; cargo build --release"
+
+      - name: backend deploy
+        run: ssh sasami "cd /opt/piece_live/backend; cargo build --release; systemctl restart piece-live-api"
