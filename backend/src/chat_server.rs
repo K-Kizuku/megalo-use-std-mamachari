@@ -79,7 +79,8 @@ impl ChatServer {
     pub fn new(visitor_count: Arc<AtomicUsize>) -> ChatServer {
         // default room
         let mut rooms = HashMap::new();
-        rooms.insert("main".to_owned(), HashSet::new());
+        rooms.insert("kichiri".to_owned(), HashSet::new());
+        rooms.insert("test".to_owned(), HashSet::new());
 
         ChatServer {
             sessions: HashMap::new(),

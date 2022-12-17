@@ -28,7 +28,7 @@ async fn index() -> impl Responder {
 }
 
 async fn chat_index() -> impl Responder {
-    NamedFile::open_async("./test/chat.html").await.unwrap()
+    NamedFile::open_async("./test/chat_test.html").await.unwrap()
 }
 
 /// Entry point for our websocket route
@@ -80,3 +80,11 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn chat_room_test() {
+        
+    }
+}
