@@ -41,7 +41,6 @@ use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
 use actix_web_httpauth::extractors::AuthenticationError;
 use actix_web_httpauth::middleware::HttpAuthentication;
 
-
 use log::{Level, logger};
 
 use megalo_use_std_mamachari::chat_server;
@@ -88,23 +87,6 @@ async fn get_count(count: web::Data<AtomicUsize>) -> impl Responder {
 }
 
 // ##### firebase ##### //
-async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, Error> {
-    let config = req.app_data::<Config>().cloned().unwrap_or_default();
-
-    println!("req.app_data::<Config>():{:?}", req.app_data::<Config>());
-    println!("credentials.token():{}", credentials.token());
-
-    match auth::validate_token(credentials.token()).await {
-        Ok(res) => {
-            if res {
-                Ok(req)
-            } else {
-                Err(AuthenticationError::from(config).into())
-            }
-        }
-        Err(_) => Err(AuthenticationError::from(config).into()),
-    }
-}
 
 
 // ##### main ##### //
@@ -114,13 +96,13 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     //env::set_var("RUST_LOG", "trace");
     env::set_var("RUST_LOG", "info");
+    dotenv::dotenv().ok();
     logger::init();
     let app_state = Arc::new(AtomicUsize::new(0));
     let chat_server = chat_server::ChatServer::new(app_state.clone()).start();
     let pool = Arc::new(new_pool()?);
     info!("HTTP Server Started at http://localhost:8080");
     HttpServer::new(move || {
-        let auth = HttpAuthentication::bearer(validator);
         App::new()
             .app_data(web::Data::from(app_state.clone()))
             .app_data(web::Data::new(chat_server.clone()))
@@ -132,8 +114,8 @@ async fn main() -> std::io::Result<()> {
             .route("/chat_count", web::get().to(get_count))
             .route("/chat_ws", web::get().to(chat_route))
             // firebase
-            .service(web::scope("/api").wrap(auth).configure(routes::api_routes))
-            .configure(routes::health_routes)
+            .route("/signup", web::post().to(auth::firebase_signup))
+            .route("/signin", web::post().to(auth::firebase_signin))
 
             .service(Files::new("/test", "./test"))
             .wrap(Logger::default())
