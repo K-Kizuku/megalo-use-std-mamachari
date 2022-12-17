@@ -1,0 +1,25 @@
+#live server configurations
+#######################################
+#   RTMP configurations(stand-alone)  #
+#######################################
+[rtmp]
+enabled = true
+port = 11935
+
+[rtmp.pull]
+enabled = false
+address = "localhost"
+port = 1935
+
+######################################
+#    HLS configurations              #
+######################################
+[hls]
+enabled = true
+port = 8080
+
+#######################################
+#   LOG configurations                #
+#######################################
+[log]
+level = "info"
