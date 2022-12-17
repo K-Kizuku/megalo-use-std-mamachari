@@ -22,7 +22,7 @@ services:
       - db
     volumes:
       - .:/app
-    command: /bin/sh -c "cargo watch -x run"
+    command: /bin/sh -c "cargo run"
   adminer:
     container_name: megalo_adminer
     hostname: adminer

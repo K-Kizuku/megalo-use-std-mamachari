@@ -6,16 +6,22 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix = "0.13.0"
+actix-files = "0.6.2"
 actix-web = "4.2.1"
+actix-web-actors = "4.1.0"
 anyhow = "1.0.66"
 dotenv = "0.15.0"
-env_logger = "0.9.0"
 chrono = "0.4.19"
 dataloader = "0.14.0"
 diesel = { version = "1.4.8", features = ["postgres", "r2d2", "chrono","uuidv07"] }
-log = "0.4.14"
 r2d2 = "0.8.9"
 uuid = { version = "0.8" , features = ["serde", "v4"] }
 pwhash = "1.0.0"
 jsonwebtoken = "8.1.1"
 serde = "1.0.145"
+arc = "0.0.1"
+env_logger = "0.10.0"
+log = "0.4.17"
+rand = "0.8.5"
+
