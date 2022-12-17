@@ -11,6 +11,8 @@ use reqwest;
 use serde::{Deserialize,Serialize};
 use chrono::{DateTime,Utc};
 use serde_json::json;
+use gloo::storage::LocalStorage;
+use gloo_storage::Storage;
 
 #[derive(Clone, PartialEq, Deserialize)]
 struct Video {
@@ -42,12 +44,17 @@ pub enum Route {
     Live,
     #[at("/playlist")]
     PlayList,
+    #[at("/live_info")]
+    LiveInfo,
     #[not_found]
     #[at("/404")]
     NotFound,
 }
 
-const URL:&str = "https://jsonplaceholder.typicode.com/todos/1";
+// const URL:&str = "https://jsonplaceholder.typicode.com/todos/1";
+const URL:&str = "/api/";
+
+
 
 #[function_component(Home)]
 pub fn home() -> Html {
@@ -132,6 +139,11 @@ pub fn sign_in() -> Html {
                 .unwrap()
                 .text()
                 .await;
+                LocalStorage::set("jwt", res.ok());
+                // match res {
+                //     Ok(r) => LocalStorage::set("yew", r.text().await.unwrap()).ok(),
+                //     Err(err) => (),
+                // }
             });
         });
             html!{
@@ -244,6 +256,8 @@ pub fn sign_up() -> Html {
                 .unwrap()
                 .text()
                 .await;
+                LocalStorage::set("jwt", res.ok());
+
             });
         });
             html!{
@@ -428,7 +442,7 @@ pub fn playlist() -> Html {
         use_effect_with_deps(move |_| {
             let play_list = play_list.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_videos:Vec<PlayListProps> = Request::get(&URL)
+                let fetched_videos:Vec<PlayListProps> = Request::get("/api")
                     .send()
                     .await
                     .unwrap()
@@ -680,6 +694,81 @@ fn app() -> Html {
 }
 
 
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
+struct LiveInfoProps {
+    title: String,
+    description: String,
+}
+
+#[function_component(LiveInfo)]
+fn live_info()-> Html{
+    let live_info = use_state(|| LiveInfoProps{title: String::from(""), description: String::from("")});
+    let input_title = 
+    {
+        let live_info = live_info.clone();
+        let onchange = Callback::from(move |e: Event| {
+            let input = e.target_dyn_into::<HtmlInputElement>();
+    
+            if let Some(input) = input {
+                live_info.set(LiveInfoProps { title: input.value(), description: String::from(live_info.description.clone())});
+            };
+        }); 
+        html!{
+            <input {onchange}/>
+        }
+    };
+    let input_description = 
+    {
+        let live_info = live_info.clone();
+        let onchange = Callback::from(move |e: Event| {
+            let input = e.target_dyn_into::<HtmlInputElement>();
+    
+            if let Some(input) = input {
+                live_info.set(LiveInfoProps { title: String::from(live_info.description.clone()), description:input.value() });
+            };
+        }); 
+        html!{
+            <input {onchange}/>
+        }
+    };
+
+    let button_post_live_info = {
+        let onclick = Callback::from(move |e: MouseEvent| {
+            let live_info = live_info.clone();
+    
+            wasm_bindgen_futures::spawn_local(async move {
+                let post_data = LiveInfoProps {title: String::from(live_info.title.clone()), description: String::from(live_info.description.clone())};
+    
+                let client = reqwest::Client::new();
+                let res = client.post("/api/signup")
+                .json(&post_data)
+                .send()
+                .await
+                .unwrap()
+                .text()
+                .await;
+            });
+        });
+            html!{
+                <button {onclick}>{"ライブ開始！"}</button>
+            }
+    };
+
+    html!{
+        <div>
+            <div>{"ライブを始める"}</div>
+            <div>{"タイトル"}</div>
+            {input_title}
+            <div>{"説明"}</div>
+            {input_description}
+            <div>
+                {button_post_live_info}
+            </div>
+        </div>
+    }
+}
+
+
 fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! {
@@ -699,6 +788,9 @@ fn switch(routes: Route) -> Html {
         },
         Route::PlayList => html! {
             <PlayList />
+        },
+        Route::LiveInfo => html! {
+            <LiveInfo />
         },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     }
