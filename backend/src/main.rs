@@ -1,3 +1,21 @@
+
+use actix_web::{
+    App,HttpServer,Responder,HttpResponse,get,
+    middleware::{
+        Compress,
+        Logger,
+    },
+    web::{
+        self,
+        Data,
+    },
+};
+use dotenv::dotenv;
+use std::{
+    env,
+    sync::Arc,
+};
+
 #[macro_use]
 extern crate log;
 extern crate env_logger as logger;
@@ -23,6 +41,8 @@ use log::{Level, logger};
 use megalo_use_std_mamachari::chat_server;
 use megalo_use_std_mamachari::chat_session;
 
+
+#[get("/")]
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
@@ -57,16 +77,20 @@ async fn get_count(count: web::Data<AtomicUsize>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+     // .envに記述された環境変数の読み込み.
+    dotenv().ok();
     //env::set_var("RUST_LOG", "trace");
     env::set_var("RUST_LOG", "info");
     logger::init();
     let app_state = Arc::new(AtomicUsize::new(0));
     let chat_server = chat_server::ChatServer::new(app_state.clone()).start();
+    let pool = Arc::new(new_pool()?);
     info!("HTTP Server Started at http://localhost:8080");
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::from(app_state.clone()))
             .app_data(web::Data::new(chat_server.clone()))
+            .app_data(Data::from(pool.clone()))
             .service(web::resource("/").to(index))
             .service(web::resource("/chat").to(chat_index))
             .route("/chat_count", web::get().to(get_count))
