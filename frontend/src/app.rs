@@ -129,7 +129,7 @@ pub fn sign_in() -> Html {
                 let post_data = SignInProps { email: String::from(authorization.email.clone()), password: String::from(authorization.password.clone()) };
 
                 let client = reqwest::Client::new();
-                let res = client.post("/api/signin")
+                let res = client.post("http://megalo.pigeons.house/api/signin")
                 // .body(serde_json::to_string(&authorization))
                 // .form(&authorization)
                 // .json(&serde_json::to_string(&authorization).unwrap())
@@ -246,7 +246,7 @@ pub fn sign_up() -> Html {
                 let post_data = SignUpProps { name: String::from(authorization.name.clone()), email: String::from(authorization.email.clone()), password: String::from(authorization.password.clone()) };
 
                 let client = reqwest::Client::new();
-                let res = client.post("/api/signup")
+                let res = client.post("http://megalo.pigeons.house/api/signup")
                 // .body(serde_json::to_string(&authorization))
                 // .form(&authorization)
                 // .json(&serde_json::to_string(&authorization).unwrap())
@@ -442,7 +442,7 @@ pub fn playlist() -> Html {
         use_effect_with_deps(move |_| {
             let play_list = play_list.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_videos:Vec<PlayListProps> = Request::get("/api")
+                let fetched_videos:Vec<PlayListProps> = Request::get("http://megalo.pigeons.house/api")
                     .send()
                     .await
                     .unwrap()
