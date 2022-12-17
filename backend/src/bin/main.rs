@@ -96,13 +96,11 @@ async fn main() -> std::io::Result<()> {
             // chat
             .app_data(web::Data::new(chat_server.clone()))
             .service(web::resource("/chat").to(chat_index))
-            .route("/chat_count", web::get().to(get_count))
-            .route("/chat_ws", web::get().to(chat_route))
-            
-
+            .route("/api/chat_count", web::get().to(get_count))
+            .route("/api/chat_ws", web::get().to(chat_route))
             //streaming
-            .route("/streams", web::get().to(st::get_all_streams))
-            .route("/streams", web::post().to(st::start_stream))
+            .route("/api/streams", web::get().to(st::get_all_streams))
+            .route("/api/streams", web::post().to(st::start_stream))
             // .route("/streams/{id}", route)
             // firebase
             .route("/api/signup", web::post().to(auth::firebase_signup))
