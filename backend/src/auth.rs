@@ -1,7 +1,7 @@
 use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder};
 use fireauth::FireAuth;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct User {
@@ -9,7 +9,12 @@ pub struct User {
     password: String,
 }
 
-pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder{
+#[derive(Serialize)]
+pub struct TokenId {
+    token: String,
+}
+
+pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     let email = &payload.email;
@@ -28,7 +33,7 @@ pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder{
     HttpResponse::Ok().body("OK")
 }
 
-pub async fn firebase_signin(payload: web::Json<User>) -> impl Responder{
+pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     let email = &payload.email;
@@ -45,5 +50,7 @@ pub async fn firebase_signin(payload: web::Json<User>) -> impl Responder{
 
     };
     info!("local_id: {:?}", user_info.local_id);
-    HttpResponse::Ok().body("OK")
+    HttpResponse::Ok().json(TokenId{
+        token: responce.id_token
+    })
 }
