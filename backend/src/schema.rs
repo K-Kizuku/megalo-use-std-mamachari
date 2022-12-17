@@ -24,8 +24,8 @@ diesel::table! {
         streamed_by -> Varchar,
         title -> Varchar,
         description -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
+        //created_at -> Timestamp,
+        //updated_at -> Timestamp,
         is_streaming -> Bool,
     }
 }

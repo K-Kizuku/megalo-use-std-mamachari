@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+// use diesel::{sql_types::Uuid};
 use uuid::Uuid;
 use crate::schema::*;
 
@@ -23,5 +24,25 @@ pub struct UserNewForm<'a> {
 
 #[derive(Queryable, Clone)]
 pub struct LoginUserForm {
-    id: String
+    pub id: String
+}
+
+#[derive(Debug,Queryable)]
+pub struct Stream {
+    pub id: Uuid,
+    pub streamed_by: String,
+    pub title: String,
+    pub description: String,
+    pub is_streaming: bool,
+    //pub created_at: Timestamp,
+    //pub updated_at: Timestamp,
+}
+
+#[derive(Insertable)]
+#[table_name = "streams"]
+pub struct NewStream {
+    pub id: Uuid,
+    pub title: String,
+    pub description: String,
+    pub streamed_by: String,
 }

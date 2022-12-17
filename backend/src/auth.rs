@@ -1,7 +1,9 @@
 use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder};
 use fireauth::FireAuth;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize,Serialize};
+use crate::db::establish_connection;
+use crate::cruds::db_sign_up;
 
 #[derive(Deserialize)]
 pub struct NewUser {
@@ -16,16 +18,12 @@ pub struct User {
     password: String,
 }
 
-<<<<<<< HEAD
-pub async fn firebase_signup(payload: web::Json<NewUser>) -> impl Responder{
-=======
 #[derive(Serialize)]
 pub struct TokenId {
     token: String,
 }
 
-pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder {
->>>>>>> main
+pub async fn firebase_signup(payload: web::Json<NewUser>) -> impl Responder {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     let email = &payload.email;
@@ -37,12 +35,11 @@ pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder {
     };
     info!("id_token: {:?}", responce.id_token);
     info!("email: {:?}", responce.email);
-<<<<<<< HEAD
     info!("local_id: {:?}", responce.local_id);
     // databse function here !
     // save local_id, email, name, description
-    let conn = crate::db::establish_connection();
-    crate::cruds::db_sign_up(
+    let conn = establish_connection();
+    db_sign_up(
         &conn,
         &responce.local_id,
         &name,
@@ -50,13 +47,11 @@ pub async fn firebase_signup(payload: web::Json<User>) -> impl Responder {
         "",
     );
 
-=======
     let user_info = match auth.get_user_info(&responce.id_token).await {
         Ok(user) => user,
         Err(_) => return HttpResponse::Unauthorized().finish(),
     };
     info!("password_hash: {:?}", user_info.password_hash);
->>>>>>> main
     HttpResponse::Ok().body("OK")
 }
 
@@ -71,16 +66,11 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     };
     info!("id_token: {:?}", responce.id_token);
     info!("email: {:?}", responce.email);
-<<<<<<< HEAD
     // databse function here !
     // search local_id -> bool
-    HttpResponse::Ok().body("OK")
-}
-=======
     let user_info = match auth.get_user_info(&responce.id_token).await {
         Ok(user) => user,
         Err(_) => return HttpResponse::Unauthorized().finish(),
->>>>>>> main
 
     };
     info!("local_id: {:?}", user_info.local_id);
