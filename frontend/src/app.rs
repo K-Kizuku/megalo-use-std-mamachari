@@ -40,7 +40,7 @@ pub enum Route {
     SignUp,
     #[at("/sign_in")]
     SignIn,
-    #[at("/live")]
+    #[at("/live_view")]
     Live,
     #[at("/playlist")]
     PlayList,
@@ -52,7 +52,6 @@ pub enum Route {
 }
 
 // const URL:&str = "https://jsonplaceholder.typicode.com/todos/1";
-const URL:&str = "/api/";
 
 
 
