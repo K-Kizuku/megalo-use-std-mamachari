@@ -1,6 +1,6 @@
 
 use actix_web::{
-    App,HttpServer,Responder,HttpResponse,get,
+    App,HttpServer,Responder,HttpResponse,get,Error,
     middleware::{
         Compress,
         Logger,
@@ -8,13 +8,9 @@ use actix_web::{
     web::{
         self,
         Data,
-    },
+    }, HttpRequest,
 };
 use dotenv::dotenv;
-use std::{
-    env,
-    sync::Arc,
-};
 
 #[macro_use]
 extern crate log;
@@ -31,11 +27,6 @@ use std::{
 
 use actix::*;
 use actix_files::{Files, NamedFile};
-use actix_web::{
-    middleware::Logger,
-    dev::ServiceRequest,
-    web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder,
-};
 use actix_web_actors::ws::{self, start};
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
 use actix_web_httpauth::extractors::AuthenticationError;
@@ -46,12 +37,12 @@ use log::{Level, logger};
 use megalo_use_std_mamachari::chat_server;
 use megalo_use_std_mamachari::chat_session;
 use megalo_use_std_mamachari::routes;
+use megalo_use_std_mamachari::db::establish_connection;
 
 mod auth;
 mod errors;
 
 
-#[get("/")]
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
@@ -100,13 +91,11 @@ async fn main() -> std::io::Result<()> {
     logger::init();
     let app_state = Arc::new(AtomicUsize::new(0));
     let chat_server = chat_server::ChatServer::new(app_state.clone()).start();
-    let pool = Arc::new(new_pool()?);
     info!("HTTP Server Started at http://localhost:8080");
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::from(app_state.clone()))
             .app_data(web::Data::new(chat_server.clone()))
-            .app_data(Data::from(pool.clone()))
             .service(web::resource("/").to(index))
             // chat
             .app_data(web::Data::new(chat_server.clone()))

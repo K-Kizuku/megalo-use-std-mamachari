@@ -7,4 +7,8 @@ pub mod routes;
 pub mod controllers;
 pub mod chat_server;
 pub mod chat_session;
+pub mod db;
+pub mod models;
+pub mod schema;
+pub mod cruds;
 

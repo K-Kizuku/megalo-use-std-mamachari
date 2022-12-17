@@ -3,7 +3,7 @@
 diesel::table! {
     comments (id) {
         id -> Uuid,
-        user_id -> Uuid,
+        user_id -> Varchar,
         stream_id -> Uuid,
         content -> Varchar,
         created_at -> Timestamp,
@@ -12,7 +12,7 @@ diesel::table! {
 
 diesel::table! {
     favorites (user_id, stream_id) {
-        user_id -> Uuid,
+        user_id -> Varchar,
         stream_id -> Uuid,
         created_at -> Timestamp,
     }
@@ -21,7 +21,7 @@ diesel::table! {
 diesel::table! {
     streams (id) {
         id -> Uuid,
-        streamed_by -> Uuid,
+        streamed_by -> Varchar,
         title -> Varchar,
         description -> Varchar,
         created_at -> Timestamp,
@@ -32,11 +32,10 @@ diesel::table! {
 
 diesel::table! {
     users (id) {
-        id -> Uuid,
+        id -> Varchar,
         name -> Varchar,
         email -> Varchar,
         description -> Varchar,
-        password -> Varchar,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
