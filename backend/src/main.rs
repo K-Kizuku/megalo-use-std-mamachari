@@ -34,11 +34,8 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 
 use log::{Level, logger};
 
-use megalo_use_std_mamachari::chat_server;
-use megalo_use_std_mamachari::chat_session;
-use megalo_use_std_mamachari::routes;
-use megalo_use_std_mamachari::db::establish_connection;
-
+mod chat_server;
+mod chat_session;
 mod auth;
 mod errors;
 

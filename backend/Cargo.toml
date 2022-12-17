@@ -21,9 +21,10 @@ uuid = { version = "0.8" , features = ["serde", "v4"] }
 pwhash = "1.0.0"
 jsonwebtoken = "8.1.1"
 arc = "0.0.1"
-chrono = {version = "0.4.23", features = ["serde"] }
+chrono = {version = "0.4", features = ["serde"] }
 derive_more = "0.99.17"
-diesel = { version = "2.0.2", features = ["postgres"] }
+#diesel = { version = "2.0.2", features = ["postgres"] }
+diesel = { version = "1.4.4", features = ["postgres", "chrono"] }
 env_logger = "0.10.0"
 fireauth = "0.1.5"
 http = "0.2.8"

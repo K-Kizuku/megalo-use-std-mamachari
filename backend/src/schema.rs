@@ -36,8 +36,8 @@ diesel::table! {
         name -> Varchar,
         email -> Varchar,
         description -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
+        //created_at -> Timestamp,
+        //updated_at -> Timestamp,
     }
 }
 

@@ -1,27 +1,24 @@
 use chrono::{DateTime, Utc};
-use diesel::{prelude::*, sql_types::Timestamp};
 use uuid::Uuid;
-use crate::schema::{
-    users
-};
+use crate::schema::*;
 
-#[derive(Queryable,Identifiable)]
+#[derive(Debug, Queryable,Identifiable)]
 pub struct User {
     pub id: String,
     pub name: String,
     pub email: String,
     pub description: String,
-    pub created_at: Timestamp,
-    pub updated_at: Timestamp,
+    //pub created_at: DateTime<Utc>,
+    //pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = users)]
-pub struct UserNewForm {
-    pub name: String,
-    pub email: String,
-    pub description: String,
-    pub id: String
+#[table_name = "users"]
+pub struct UserNewForm<'a> {
+    pub id: &'a str,
+    pub name: &'a str,
+    pub email: &'a str,
+    pub description: &'a str,
 }
 
 #[derive(Queryable, Clone)]
