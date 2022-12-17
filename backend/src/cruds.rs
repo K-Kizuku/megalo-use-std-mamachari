@@ -20,6 +20,22 @@ pub fn db_sign_up<'a>(conn: &PgConnection, id: &'a str, name: &'a str, email: &'
         .expect("Error saving new post")
 }
 
+fn get_list_users(conn: &PgConnection) -> Vec<crate::models::User> {
+    use crate::schema::users;
+    use crate::models::User;
+    users::table.load::<User>(conn).expect("Error getting users")
+}
+
+pub fn db_sign_in(conn: &PgConnection, id: String) -> bool {
+    let user_vec = get_list_users(conn);
+    match user_vec
+        .iter()
+        .find(|&user| user.id == id) {
+    Some(_) => return true,
+    None => return false,
+    };
+}
+
 pub fn create_new_stream(conn: &PgConnection, other_title: String, description: String, streamed_by: String) -> crate::models::Stream {
     use crate::schema::streams;
     use crate::models::NewStream;

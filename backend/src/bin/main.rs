@@ -92,24 +92,26 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::from(app_state.clone()))
             .app_data(web::Data::new(chat_server.clone()))
-            .service(web::resource("/").to(index))
+            .service(web::resource("/api").to(index))
             // chat
             .app_data(web::Data::new(chat_server.clone()))
             .service(web::resource("/chat").to(chat_index))
             .route("/chat_count", web::get().to(get_count))
             .route("/chat_ws", web::get().to(chat_route))
-            // firebase
-            .route("/signup", web::post().to(auth::firebase_signup))
-            .route("/signin", web::post().to(auth::firebase_signin))
+            
+
             //streaming
             .route("/streams", web::get().to(st::get_all_streams))
             .route("/streams", web::post().to(st::start_stream))
             // .route("/streams/{id}", route)
+            // firebase
+            .route("/api/signup", web::post().to(auth::firebase_signup))
+            .route("/api/signin", web::post().to(auth::firebase_signin))
             .service(Files::new("/test", "./test"))
             .wrap(Logger::default())
     })
     .workers(2)
-    .bind(("127.0.0.1", 8000))?
+    .bind(("0.0.0.0", 8000))?
     .run()
     .await
 }

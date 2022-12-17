@@ -27,7 +27,7 @@ jobs:
         run: rsync -av ./ sasami:/opt/piece_live
 
       - name: frontend deploy
-        run: ssh sasami "cd /opt/piece_live/frontend; cargo build --release"
+        run: ssh sasami "cd /opt/piece_live/frontend; ~/.cargo/bin/trunk build --release"
 
       - name: backend deploy
-        run: ssh sasami "cd /opt/piece_live/backend; cargo build --release; systemctl restart piece-live-api"
+        run: ssh sasami "cd /opt/piece_live/backend; ~/.cargo/bin/cargo build --release; systemctl restart piece-live-api"
