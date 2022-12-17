@@ -6,7 +6,7 @@ diesel::table! {
         user_id -> Varchar,
         stream_id -> Varchar,
         content -> Varchar,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Timestamp,
     }
 }
 
@@ -24,8 +24,9 @@ diesel::table! {
         streamed_by -> Varchar,
         title -> Varchar,
         description -> Varchar,
-        created_at -> Nullable<Timestamp>,
-        updated_at -> Nullable<Timestamp>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+        is_streaming -> Bool,
     }
 }
 
@@ -36,8 +37,8 @@ diesel::table! {
         email -> Varchar,
         description -> Varchar,
         password -> Varchar,
-        created_at -> Nullable<Timestamp>,
-        updated_at -> Nullable<Timestamp>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
