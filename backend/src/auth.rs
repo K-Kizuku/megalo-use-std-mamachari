@@ -3,7 +3,7 @@ use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder};
 use fireauth::FireAuth;
 use serde::{Deserialize,Serialize};
 use crate::db::establish_connection;
-use crate::cruds::db_sign_up;
+use crate::cruds::{db_sign_up, db_sign_in};
 
 #[derive(Deserialize)]
 pub struct NewUser {
@@ -36,7 +36,6 @@ pub async fn firebase_signup(payload: web::Json<NewUser>) -> impl Responder {
     info!("id_token: {:?}", responce.id_token);
     info!("email: {:?}", responce.email);
     info!("local_id: {:?}", responce.local_id);
-    // databse function here !
     // save local_id, email, name, description
     let conn = establish_connection();
     db_sign_up(
@@ -66,8 +65,12 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     };
     info!("id_token: {:?}", responce.id_token);
     info!("email: {:?}", responce.email);
-    // databse function here !
     // search local_id -> bool
+    let conn = establish_connection();
+    match db_sign_in(&conn, responce.local_id) {
+        true => (),
+        false => return HttpResponse::Unauthorized().finish(),
+    };
     let user_info = match auth.get_user_info(&responce.id_token).await {
         Ok(user) => user,
         Err(_) => return HttpResponse::Unauthorized().finish(),
