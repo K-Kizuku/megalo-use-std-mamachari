@@ -694,11 +694,22 @@ fn switch(routes: Route) -> Html {
     }
 }
 
+#[function_component(CustomHeader)]
+pub fn custom_header() -> Html {
+    html!{
+        <div>{"ヘッダーだよ"}</div>
+    }
+}
+
+
 #[function_component(App)]
 pub fn app() -> Html {
     html! {
-        <BrowserRouter>
-            <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
-        </BrowserRouter>
+        <>
+            <CustomHeader />
+            <BrowserRouter>
+                <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
+            </BrowserRouter>
+        </>
     }
 }
