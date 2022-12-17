@@ -34,9 +34,10 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 
 use log::{Level, logger};
 
-use megalo_use_std_mamachari::chat_server;
+use megalo_use_std_mamachari::{chat_server, schema::streams, streams as st};
 use megalo_use_std_mamachari::chat_session;
 use megalo_use_std_mamachari::auth;
+
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -100,7 +101,10 @@ async fn main() -> std::io::Result<()> {
             // firebase
             .route("/signup", web::post().to(auth::firebase_signup))
             .route("/signin", web::post().to(auth::firebase_signin))
-
+            //streaming
+            .route("/streams", web::get().to(st::get_all_streams))
+            .route("/streams", web::post().to(st::start_stream))
+            // .route("/streams/{id}", route)
             .service(Files::new("/test", "./test"))
             .wrap(Logger::default())
     })
