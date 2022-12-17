@@ -34,11 +34,9 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 
 use log::{Level, logger};
 
-mod chat_server;
-mod chat_session;
-mod auth;
-mod errors;
-
+use megalo_use_std_mamachari::chat_server;
+use megalo_use_std_mamachari::chat_session;
+use megalo_use_std_mamachari::auth;
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
