@@ -81,3 +81,21 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
         token: responce.id_token
     })
 }
+
+pub async fn get_user_info(request: HttpRequest,id_token: String) -> HttpResponse {
+    let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
+    let auth = FireAuth::new(api_key);
+    // search local_id -> bool
+    let conn = establish_connection();
+    let user_info = match auth.get_user_info(&id_token).await {
+        Ok(user) => user,
+        Err(_) => return HttpResponse::Unauthorized().finish(),
+
+    };
+    match db_sign_in(&conn, user_info.local_id) {
+        true => (),
+        false => return HttpResponse::Unauthorized().finish(),
+    };
+    HttpResponse::Ok().finish()
+}
+

@@ -1,3 +1,5 @@
+use actix_web_httpauth::headers;
+use actix_web_httpauth::headers::www_authenticate::bearer;
 use chrono::NaiveDateTime;
 use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder};
@@ -5,6 +7,7 @@ use fireauth::FireAuth;
 use serde::{Deserialize,Serialize};
 use crate::db::establish_connection;
 use crate::cruds::*;
+use crate::auth::get_user_info;
 
 #[derive(Deserialize)]
 pub struct NewStream {
@@ -22,7 +25,13 @@ pub struct NewStream {
 //     is_streaming: bool
 // }
 
-pub async fn start_stream(payload: web::Json<NewStream>) -> impl Responder {
+pub async fn start_stream(payload: web::Json<NewStream>, request: HttpRequest) -> impl Responder {
+    let bearer = match request.headers().get("Authorization") {
+        Some(bearer) => bearer,
+        None => return HttpResponse::Unauthorized().finish(),
+    };
+
+
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     let title = &payload.title;
