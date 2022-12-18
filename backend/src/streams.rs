@@ -31,10 +31,10 @@ pub async fn start_stream(payload: web::Json<NewStream>, request: HttpRequest) -
         false => return HttpResponse::Unauthorized().finish(),
     };
 
-    let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
-    let auth = FireAuth::new(api_key);
-    let title = &payload.title;
-    let description = &payload.description;
+    //let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
+    //let auth = FireAuth::new(api_key);
+    //let title = &payload.title;
+    //let description = &payload.description;
     // let responce = match auth.sign_up_email(&email, &password, true).await {
     //     Ok(response) => response,
     //     Err(_) => return HttpResponse::Unauthorized().finish(),

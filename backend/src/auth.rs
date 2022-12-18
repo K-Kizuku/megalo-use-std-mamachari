@@ -83,25 +83,36 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     })
 }
 
-pub async fn minimal_auth(request: &HttpRequest) -> bool {
+#[derive(Debug)]
+pub enum MinimalAuthErr {
+    TokenNotFound,
+    UserFirebaseNotFound,
+    UserDbNotFound,
+}
+
+pub type MinimalAuthResult = Result<String, MinimalAuthErr>;
+
+
+pub async fn minimal_auth(request: &HttpRequest) -> MinimalAuthResult {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
+    // Authorization check
     let bearer = match request.headers().get("Authorization") {
         Some(bearer) => bearer,
-        None => return false,
+        None => return Err(MinimalAuthErr::TokenNotFound),
     };
-    // search local_id -> bool
+    // user exist check
+    let user_local_id = match auth.get_user_info(bearer.to_str().unwrap()).await {
+        Ok(user) => user.local_id,
+        Err(_) => return Err(MinimalAuthErr::UserFirebaseNotFound),
+
+    };
     let conn = establish_connection();
-    let user_info = match auth.get_user_info(bearer.to_str().unwrap()).await {
-        Ok(user) => user,
-        Err(_) => return false,
-
-    };
-    match db_sign_in(&conn, user_info.local_id) {
+    match db_sign_in(&conn, user_local_id.clone()) {
         true => (),
-        false => return false,
+        false => return Err(MinimalAuthErr::UserDbNotFound),
     };
 
-    true
+    Ok(user_local_id)
 }
 
