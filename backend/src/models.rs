@@ -1,8 +1,10 @@
 use chrono::{DateTime, Utc,NaiveDateTime};
 use serde::Serialize;
-// use diesel::{sql_types::Uuid};
+use std::marker::Copy;
 use uuid::Uuid;
 use crate::schema::*;
+use diesel::prelude::*;
+use diesel::associations::HasTable;
 
 #[derive(Debug, Queryable,Identifiable)]
 pub struct User {
@@ -28,7 +30,8 @@ pub struct LoginUserForm {
     pub id: String
 }
 
-#[derive(Debug,Queryable,Serialize)]
+#[derive(Queryable,AsChangeset,Identifiable,Serialize)]
+#[table_name = "streams"]
 pub struct Stream {
     pub id: Uuid,
     pub streamed_by: String,

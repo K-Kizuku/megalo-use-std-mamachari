@@ -96,13 +96,14 @@ pub async fn get_one_stream(path: web::Path<String>, request: HttpRequest) -> im
     HttpResponse::Ok().json(stream)
 }
 
-#[derive(Deserialize)]
-pub struct UpdateQuery {
-    pub key: String,
-    pub name: String
-}
-
-#[get("/api/streams/update")]
-pub async fn update_streaming(query: web::Query<UpdateQuery>) -> impl Responder {
-    HttpResponse::Ok().body(format!("key is {}. name is {}.", query.key, query.name))
+pub async fn update_streaming(request: HttpRequest) -> impl Responder {
+    let local_id = match minimal_auth(&request).await{
+        Ok(id) => id,
+        Err(_) => return HttpResponse::Unauthorized().finish(),
+    };
+    let conn = establish_connection();
+    match update_stream_flag(&conn, local_id) {
+        true => HttpResponse::Ok().body("OK"),
+        false => return HttpResponse::InternalServerError().finish(),
+    }
 }

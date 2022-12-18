@@ -61,14 +61,19 @@ pub fn get_list_streams(conn: &PgConnection) -> Vec<crate::models::Stream> {
     streams.filter(is_streaming.eq(true)).load::<Stream>(conn).expect("Error failed all streams")
 }
 
-// pub fn update_stream_flag(conn: &PgConnection, uid: String) -> crate::models::Stream {
-//     use crate::schema::streams::dsl::*;
-//     use crate::schema::users::dsl::*;
-//     use crate::models::User;
-//     use crate::models::Stream;
-//     let user = users.find(uid.clone()).first::<User>(conn).expect("Error user not found!");
-//     let stream = streams.order_by(created_at.desc()).limit(1).filter(streamed_by.eq(uid));
-// }
+pub fn update_stream_flag(conn: &PgConnection, uid: String) -> bool {
+    use crate::schema::streams::dsl::*;
+    use crate::schema::users::dsl::*;
+    use crate::models::User;
+    use crate::models::Stream;
+    let user = users.find(uid.clone()).first::<User>(conn).expect("Error user not found!");
+    let mut stream = streams.order_by(created_at.desc()).filter(streamed_by.eq(uid)).first::<Stream>(conn).expect("not found satream");
+    stream.is_streaming = true;
+    match stream.save_changes::<Stream>(conn) {
+        Ok(_) => return true,
+        Err(_) => return false,
+    };
+}
 
 pub fn get_stream_by_id(conn: &PgConnection, sid: &str) -> crate::models::Stream {
     use crate::models::Stream;
