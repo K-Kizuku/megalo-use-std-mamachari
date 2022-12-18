@@ -34,8 +34,8 @@ struct Tsemp {
 pub enum Route {
     #[at("/")]
     Home,
-    #[at("/secure")]
-    Secure,
+    // #[at("/secure")]
+    // Secure,
     #[at("/sign_up")]
     SignUp,
     #[at("/sign_in")]
@@ -83,18 +83,18 @@ pub fn home() -> Html {
 
 }
 
-#[function_component(Secure)]
-pub fn secure() -> Html {
-    let navigator = use_navigator().unwrap();
+// #[function_component(Secure)]
+// pub fn secure() -> Html {
+//     let navigator = use_navigator().unwrap();
 
-    let onclick = Callback::from(move |_| navigator.push(&Route::Home));
-    html! {
-        <div>
-            <h1>{ "Secure" }</h1>
-            <button {onclick}>{ "Go Home" }</button>
-        </div>
-    }
-}
+//     let onclick = Callback::from(move |_| navigator.push(&Route::Home));
+//     html! {
+//         <div>
+//             <h1>{ "Secure" }</h1>
+//             <button {onclick}>{ "Go Home" }</button>
+//         </div>
+//     }
+// }
 
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 struct SignInProps {
@@ -461,21 +461,21 @@ pub fn playlist() -> Html {
     let mut demo:Vec<PlayListProps> =  vec![];
     demo.push(PlayListProps {
         id:"1".to_string(),
-        streamed_by: "".to_string(),
-        title : "hoge".to_string(),
-        description : "".to_string(),
+        streamed_by: "t3mp".to_string(),
+        title : "半導体作ってみた！".to_string(),
+        description : "半導体不足で大変ですよね．そんな時は自作半導体！みなさ…".to_string(),
         created_at : "".to_string(),
         updated_at : "".to_string(),
         is_streaming : false,
     });
     demo.push(PlayListProps {
         id:"2".to_string(),
-        streamed_by: "".to_string(),
-        title : "fuga".to_string(),
-        description : "".to_string(),
+        streamed_by: "鳩屋敷".to_string(),
+        title : "配信やってみた✌".to_string(),
+        description : "えと…あの…そ，その……はじまm，はじめまして．鳩屋敷で…".to_string(),
         created_at : "".to_string(),
         updated_at : "".to_string(),
-        is_streaming : false,
+        is_streaming : true,
     });
     // PlayListPops {
     //     id:"",
@@ -505,8 +505,9 @@ pub fn playlist() -> Html {
     }
     html!{
         <div>
-        <h1>
+        <h1 class="live-list-title">
         // {format!("{}", play_list[0].id)}
+        {"今熱いライブ"}
         </h1>
         <div>
         // {for x in demo{
@@ -514,9 +515,16 @@ pub fn playlist() -> Html {
         // }}
         { for demo.iter().map(|e| {
             html!{
-                <div>
-                    {e.id.to_string()}
-                    {e.title.to_string()}
+                <div class="stream-card">
+                    <div class="upper-card">
+                        <span class="stream-title">{e.title.to_string()}</span>
+                        <span class="streamer-name">{e.streamed_by.to_string()}</span>
+                    </div>
+                    <div class="lower-card">
+                        <span>
+                            {e.description.to_string()}
+                        </span>
+                    </div>
                 </div>
             }
             
@@ -698,49 +706,49 @@ fn videos_list(VideosListProps { videos, on_click }: &VideosListProps) -> Html {
     }).collect()
 }
 
-#[function_component(Test)]
-fn app() -> Html {
-   let videos = use_state(|| vec![]);
-   {
-       let videos = videos.clone();
-       use_effect_with_deps(move |_| {
-           let videos = videos.clone();
-           wasm_bindgen_futures::spawn_local(async move {
-               let fetched_videos: Vec<Video> = Request::get("https://yew.rs/tutorial/data.json")
-                   .send()
-                   .await
-                   .unwrap()
-                   .json()
-                   .await
-                   .unwrap();
-               videos.set(fetched_videos);
-           });
-           || ()
-       }, ());
-   }
-   let selected_video = use_state(|| None);
-       let on_video_select = {
-            let selected_video = selected_video.clone();
-            Callback::from(move |video: Video| {
-                selected_video.set(Some(video))
-            })
-        };
+// #[function_component(Test)]
+// fn app() -> Html {
+//    let videos = use_state(|| vec![]);
+//    {
+//        let videos = videos.clone();
+//        use_effect_with_deps(move |_| {
+//            let videos = videos.clone();
+//            wasm_bindgen_futures::spawn_local(async move {
+//                let fetched_videos: Vec<Video> = Request::get("https://yew.rs/tutorial/data.json")
+//                    .send()
+//                    .await
+//                    .unwrap()
+//                    .json()
+//                    .await
+//                    .unwrap();
+//                videos.set(fetched_videos);
+//            });
+//            || ()
+//        }, ());
+//    }
+//    let selected_video = use_state(|| None);
+//        let on_video_select = {
+//             let selected_video = selected_video.clone();
+//             Callback::from(move |video: Video| {
+//                 selected_video.set(Some(video))
+//             })
+//         };
     
-        // let details = selected_video.as_ref().map(|video| html! {
-        //     <VideoDetails video={video.clone()} />
-        // });
+//         // let details = selected_video.as_ref().map(|video| html! {
+//         //     <VideoDetails video={video.clone()} />
+//         // });
 
-    html! {
-        <>
-            <h1>{ "RustConf Explorer" }</h1>
-            <div>
-                <h3>{"Videos to watch"}</h3>
-                <VideosList videos={(*videos).clone()} on_click={on_video_select.clone()} />
-            </div>
-            // { for details }
-        </>
-    }
-}
+//     html! {
+//         <>
+//             <h1>{ "RustConf Explorer" }</h1>
+//             <div>
+//                 <h3>{"Videos to watch"}</h3>
+//                 <VideosList videos={(*videos).clone()} on_click={on_video_select.clone()} />
+//             </div>
+//             // { for details }
+//         </>
+//     }
+// }
 
 
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
@@ -804,8 +812,8 @@ fn live_info()-> Html{
     };
 
     html!{
-        <div>
-            <div>{"ライブを始める"}</div>
+        <div class="live-info">
+            <h1>{"ライブを始める"}</h1>
             <div>{"タイトル"}</div>
             {input_title}
             <div>{"説明"}</div>
@@ -823,9 +831,9 @@ fn switch(routes: Route) -> Html {
         Route::Home => html! {
             <Home /> 
         },
-        Route::Secure => html! {
-            <Secure />
-        },
+        // Route::Secure => html! {
+        //     <Secure />
+        // },
         Route::SignIn => html! {
             <SignIn />
         },
