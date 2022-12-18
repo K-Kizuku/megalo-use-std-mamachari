@@ -366,10 +366,79 @@ pub fn live() -> Html {
     let onclick = Callback::from(move |_| navigator.push(&Route::PlayList));
 
     html! {
-        <div>
-            <h1>{"ライブ画面" }</h1>
-            <video controls={true} id="video"></video>
-            <button {onclick}>{ "一覧表示へ" }</button>
+        <div class="stream-view">
+            <div class="video-zone">
+                <button class="primary-button" {onclick}>{ "一覧表示へ" }</button>
+                <video controls={true} id="video"></video>
+                <h1>{"配信やってみた✌"}</h1>
+                <div class="user-info">
+                    <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                    <span>{"User1"}</span>
+                </div>
+            </div>
+            <div class="comment-zone">
+                <p class="comment-column-title">{"コメント"}</p>
+                <div class="comment-list">
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                </div>
+                <textarea placeholder="コメント"> </textarea>
+                <button>{"送信"}</button>
+            </div>
         </div>
     }
 }
@@ -779,7 +848,7 @@ fn switch(routes: Route) -> Html {
 #[function_component(CustomHeader)]
 pub fn custom_header() -> Html {
     html!{
-        <div class="header">{"ヘッダーだよ"}</div>
+        <div class="header">{"PieceLive"}</div>
     }
 }
 
