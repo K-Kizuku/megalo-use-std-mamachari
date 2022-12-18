@@ -102,7 +102,7 @@ async fn main() -> std::io::Result<()> {
             .route("/api/streams", web::get().to(st::get_all_streams))
             .route("/api/streams", web::post().to(st::start_stream))
             .service(st::get_one_stream)
-            // .route("/streams/{id}", route)
+            .service(st::update_streaming)
             // firebase
             .route("/api/signup", web::post().to(auth::firebase_signup))
             .route("/api/signin", web::post().to(auth::firebase_signin))

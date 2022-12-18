@@ -95,3 +95,14 @@ pub async fn get_one_stream(path: web::Path<String>, request: HttpRequest) -> im
     let stream = cruds::get_stream_by_id(&conn, &id);
     HttpResponse::Ok().json(stream)
 }
+
+#[derive(Deserialize)]
+pub struct UpdateQuery {
+    pub key: String,
+    pub name: String
+}
+
+#[get("/api/streams/update")]
+pub async fn update_streaming(query: web::Query<UpdateQuery>) -> impl Responder {
+    HttpResponse::Ok().body(format!("key is {}. name is {}.", query.key, query.name))
+}
