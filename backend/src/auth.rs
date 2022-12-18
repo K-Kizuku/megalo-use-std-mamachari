@@ -83,24 +83,25 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     })
 }
 
-pub async fn minimal_auth(request: HttpRequest) -> HttpResponse {
+pub async fn minimal_auth(request: &HttpRequest) -> bool {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     let bearer = match request.headers().get("Authorization") {
         Some(bearer) => bearer,
-        None => return HttpResponse::Unauthorized().finish(),
+        None => return false,
     };
     // search local_id -> bool
     let conn = establish_connection();
     let user_info = match auth.get_user_info(bearer.to_str().unwrap()).await {
         Ok(user) => user,
-        Err(_) => return HttpResponse::Unauthorized().finish(),
+        Err(_) => return false,
 
     };
     match db_sign_in(&conn, user_info.local_id) {
         true => (),
-        false => return HttpResponse::Unauthorized().finish(),
+        false => return false,
     };
-    HttpResponse::Ok().finish()
+
+    true
 }
 

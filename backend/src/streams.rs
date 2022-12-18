@@ -26,11 +26,10 @@ pub struct NewStream {
 // }
 
 pub async fn start_stream(payload: web::Json<NewStream>, request: HttpRequest) -> impl Responder {
-    let bearer = match request.headers().get("Authorization") {
-        Some(bearer) => bearer,
-        None => return HttpResponse::Unauthorized().finish(),
+    match minimal_auth(&request).await {
+        true => (),
+        false => return HttpResponse::Unauthorized().finish(),
     };
-
 
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
@@ -56,7 +55,12 @@ pub async fn start_stream(payload: web::Json<NewStream>, request: HttpRequest) -
     HttpResponse::Ok().json(stream)
 }
 
-pub async fn get_all_streams() -> HttpResponse {
+pub async fn get_all_streams(req: HttpRequest) -> HttpResponse {    
+    match minimal_auth(&req).await {
+        true => (),
+        false => return HttpResponse::Unauthorized().finish(),
+    };
+
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     
