@@ -1,3 +1,4 @@
+use actix_web_httpauth::headers::www_authenticate::bearer;
 use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder};
 use fireauth::FireAuth;
@@ -82,12 +83,16 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     })
 }
 
-pub async fn get_user_info(request: HttpRequest,id_token: String) -> HttpResponse {
+pub async fn get_user_info(request: HttpRequest) -> HttpResponse {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
+    let bearer = match request.headers().get("Authorization") {
+        Some(bearer) => bearer,
+        None => return HttpResponse::Unauthorized().finish(),
+    };
     // search local_id -> bool
     let conn = establish_connection();
-    let user_info = match auth.get_user_info(&id_token).await {
+    let user_info = match auth.get_user_info(bearer.to_str().unwrap()).await {
         Ok(user) => user,
         Err(_) => return HttpResponse::Unauthorized().finish(),
 
