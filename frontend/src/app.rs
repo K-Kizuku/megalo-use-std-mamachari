@@ -22,13 +22,13 @@ struct Video {
     url: String,
 }
 
-#[derive(Clone, PartialEq, Deserialize)]
-struct Tsemp {
-    userId: i32,
-    id: i32,
-    title: String,
-    completed: bool,
-}
+// #[derive(Clone, PartialEq, Deserialize)]
+// struct Tsemp {
+//     userId: i32,
+//     id: i32,
+//     title: String,
+//     completed: bool,
+// }
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -40,8 +40,8 @@ pub enum Route {
     SignUp,
     #[at("/sign_in")]
     SignIn,
-    #[at("/stream_view")]
-    Live,
+    #[at("/stream_view/:id")]
+    LiveNum {id:String},
     #[at("/playlist")]
     PlayList,
     #[at("/stream_info")]
@@ -443,20 +443,152 @@ pub fn live() -> Html {
     }
 }
 
+
+
+
+
+
+
+
+#[derive(Properties, PartialEq, Clone)]
+pub struct Props {
+    pub id: String,
+}
+#[function_component(LiveNum)]
+pub fn live_num(props:&Props) -> Html {
+    let input_value_handle = use_state(String::default);
+    let input_value = (*input_value_handle).clone();
+    let user_id = props.id.clone();
+    let testop = || {
+        #[wasm_bindgen(module="/src/test.js")]
+        extern "C"{
+            fn testjs();
+        }
+
+        #[wasm_bindgen]
+        pub fn temp00 (user_id:String){
+            testjs();
+        }
+        temp00(user_id); 
+    };
+    // fn test() {
+
+    //     #[wasm_bindgen(module="/src/test.js")]
+    //     extern "C"{
+    //         fn testjs(user_id:String);
+    //     }
+
+    //     #[wasm_bindgen]
+    //     pub fn temp00 (user_id:&str){
+    //         testjs(user_id.to_string());
+    //     }
+    //     temp00(user_id);
+    // }
+    use_effect_with_deps(move |_| {
+        wasm_bindgen_futures::spawn_local(async move {
+            testop();
+        });
+        || ()
+    }, ());
+
+
+    let navigator = use_navigator().unwrap();
+
+    let onclick = Callback::from(move |_| navigator.push(&Route::PlayList));
+
+    html! {
+        <div class="stream-view">
+            <div class="video-zone">
+                <button class="primary-button" {onclick}>{ "一覧表示へ" }</button>
+                <video controls={true} id="video"></video>
+                <h1>{"配信やってみた✌"}</h1>
+                <div class="user-info">
+                    <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                    <span>{"User1"}</span>
+                </div>
+            </div>
+            <div class="comment-zone">
+                <p class="comment-column-title">{"コメント"}</p>
+                <div class="comment-list">
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                    <div class="comment-component">
+                        <div class="comment-user-info">
+                            <img src="https://1.bp.blogspot.com/-GqIjU--SM-k/X9lJl-pkCjI/AAAAAAABc68/hEhMB_uG-xEPzhgaRjBhgX24-niyVZUnwCNcBGAsYHQ/s637/pose_reiwa_woman.png" alt="user1"/>
+                            <span>{"User1"}</span>
+                        </div>
+                        <p>{"面白いですね！www"}</p>
+                    </div>
+                </div>
+                <textarea placeholder="コメント"> </textarea>
+                <button>{"送信"}</button>
+            </div>
+        </div>
+    }
+}
+
 #[derive(Clone, PartialEq, Deserialize)]
 struct PlayListProps {
-        id : String,
-        streamed_by: String,
-        title : String,
-        description : String,
-        created_at : String,
-        updated_at : String,
-        is_streaming : bool,
+    id : String,
+    streamed_by: String,
+    title : String,
+    description : String,
+    created_at : String,
+    updated_at : String,
+    is_streaming : bool,
 }
 
 
 #[function_component(PlayList)]
 pub fn playlist() -> Html {
+    let navigator = use_navigator().unwrap();
     let play_list = use_state(|| vec![]);
     let mut demo:Vec<PlayListProps> =  vec![];
     demo.push(PlayListProps {
@@ -498,7 +630,7 @@ pub fn playlist() -> Html {
                     .json()
                     .await
                     .unwrap();
-                    play_list.set(fetched_videos);
+                play_list.set(fetched_videos);
             });
             || ()
         }, ());
@@ -513,12 +645,15 @@ pub fn playlist() -> Html {
         // {for x in demo{
         //     format!("{}", x.id)
         // }}
-        { for demo.iter().map(|e| {
+        { for demo.into_iter().map(|e| {
+            let navigator = navigator.clone();
+            let onclick = Callback::from(move |eve:MouseEvent| navigator.push(&Route::LiveNum{id:"?id=hyvgug".to_string()}));
+
             html!{
-                <div class="stream-card">
+                <div {onclick} class="stream-card">
                     <div class="upper-card">
                         <span class="stream-title">{e.title.to_string()}</span>
-                        <span class="streamer-name">{e.streamed_by.to_string()}</span>
+                        // <span class="streamer-name">{e.streamed_by.to_string()}</span>
                     </div>
                     <div class="lower-card">
                         <span>
@@ -797,7 +932,7 @@ fn live_info()-> Html{
                 let post_data = LiveInfoProps {title: String::from(live_info.title.clone()), description: String::from(live_info.description.clone())};
     
                 let client = reqwest::Client::new();
-                let res = client.post("/api/signup")
+                let res = client.post("/api/streams")
                 .json(&post_data)
                 .send()
                 .await
@@ -840,8 +975,8 @@ fn switch(routes: Route) -> Html {
         Route::SignUp => html! {
             <SignUp />
         },
-        Route::Live => html!{
-            <Live />
+        Route::LiveNum{id} => html!{
+            <LiveNum id={id} />
         },
         Route::PlayList => html! {
             <PlayList />
