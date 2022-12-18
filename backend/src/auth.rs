@@ -83,7 +83,7 @@ pub async fn firebase_signin(payload: web::Json<User>) -> HttpResponse {
     })
 }
 
-pub async fn get_user_info(request: HttpRequest) -> HttpResponse {
+pub async fn minimal_auth(request: HttpRequest) -> HttpResponse {
     let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
     let auth = FireAuth::new(api_key);
     let bearer = match request.headers().get("Authorization") {

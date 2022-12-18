@@ -7,7 +7,7 @@ use fireauth::FireAuth;
 use serde::{Deserialize,Serialize};
 use crate::db::establish_connection;
 use crate::cruds::*;
-use crate::auth::get_user_info;
+use crate::auth::minimal_auth;
 
 #[derive(Deserialize)]
 pub struct NewStream {
