@@ -34,9 +34,10 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 
 use log::{Level, logger};
 
-use megalo_use_std_mamachari::chat_server;
+use megalo_use_std_mamachari::{chat_server, schema::streams, streams as st};
 use megalo_use_std_mamachari::chat_session;
 use megalo_use_std_mamachari::auth;
+
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -95,12 +96,18 @@ async fn main() -> std::io::Result<()> {
             // chat
             .app_data(web::Data::new(chat_server.clone()))
             .service(web::resource("/chat").to(chat_index))
-            .route("/chat_count", web::get().to(get_count))
-            .route("/chat_ws", web::get().to(chat_route))
+            .route("/api/chat_count", web::get().to(get_count))
+            .route("/api/chat_ws", web::get().to(chat_route))
+            //streaming
+            .route("/api/streams", web::get().to(st::get_all_streams))
+            .route("/api/streams", web::post().to(st::start_stream))
+            //.route("/api/streams/modify", web::get().to(st::update_streaming))
+            .service(st::update_streaming)
+            .service(st::delete_streaming)
+            .service(st::get_one_stream)
             // firebase
             .route("/api/signup", web::post().to(auth::firebase_signup))
             .route("/api/signin", web::post().to(auth::firebase_signin))
-
             .service(Files::new("/test", "./test"))
             .wrap(Logger::default())
     })
