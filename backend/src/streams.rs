@@ -1,6 +1,7 @@
 use actix_web_httpauth::headers;
 use actix_web_httpauth::headers::www_authenticate::bearer;
 use chrono::NaiveDateTime;
+use diesel::deserialize;
 use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder, get};
 use fireauth::FireAuth;
@@ -96,13 +97,19 @@ pub async fn get_one_stream(path: web::Path<String>, request: HttpRequest) -> im
     HttpResponse::Ok().json(stream)
 }
 
-pub async fn update_streaming(request: HttpRequest) -> impl Responder {
-    let local_id = match minimal_auth(&request).await{
-        Ok(id) => id,
-        Err(_) => return HttpResponse::Unauthorized().finish(),
-    };
+#[derive(Deserialize)]
+pub struct ModifyQuery {
+    app: String,
+    name: String,
+}
+
+#[get("/api/streams/modify")]
+pub async fn update_streaming(
+    query: web::Query<ModifyQuery>,
+    ) -> impl Responder {
+    info!("app is {:?}, name is {:?}", query.app, query.name);
     let conn = establish_connection();
-    match update_stream_flag(&conn, local_id) {
+    match update_stream_flag(&conn, &query.name) {
         true => HttpResponse::Ok().body("OK"),
         false => return HttpResponse::InternalServerError().finish(),
     }

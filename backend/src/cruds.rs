@@ -61,7 +61,7 @@ pub fn get_list_streams(conn: &PgConnection) -> Vec<crate::models::Stream> {
     streams.filter(is_streaming.eq(true)).load::<Stream>(conn).expect("Error failed all streams")
 }
 
-pub fn update_stream_flag(conn: &PgConnection, uid: String) -> bool {
+pub fn update_stream_flag(conn: &PgConnection, uid: &String) -> bool {
     use crate::schema::streams::dsl::*;
     use crate::schema::users::dsl::*;
     use crate::models::User;
