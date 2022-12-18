@@ -1,4 +1,4 @@
-use yew_router::prelude::*;
+use yew_router::{prelude::*, navigator};
 use yew::prelude::*;
 // use wasm_bindgen::prelude::wasm_bindgen;
 // use wasm_bindgen::JsCast;
@@ -226,7 +226,7 @@ pub fn sign_up() -> Html {
     // let password = use_state(String::default);
     let navigator = use_navigator().unwrap();
     
-    let onclick = Callback::from(move |_| navigator.push(&Route::SignUp));
+    let onclick = Callback::from(move |_| navigator.push(&Route::SignIn));
 
     let authorization = authorization.clone();
 
@@ -246,6 +246,18 @@ pub fn sign_up() -> Html {
 
                 let client = reqwest::Client::new();
                 let res = client.post("http://megalo.pigeons.house/api/signup")
+                // .body(serde_json::to_string(&authorization))
+                // .form(&authorization)
+                // .json(&serde_json::to_string(&authorization).unwrap())
+                .json(&post_data)
+                .send()
+                .await
+                .unwrap()
+                .text()
+                .await;
+                let post_data = SignInProps { email: String::from(authorization.email.clone()), password: String::from(authorization.password.clone()) };
+
+                let res = client.post("http://megalo.pigeons.house/api/signin")
                 // .body(serde_json::to_string(&authorization))
                 // .form(&authorization)
                 // .json(&serde_json::to_string(&authorization).unwrap())
