@@ -22,13 +22,13 @@ struct Video {
     url: String,
 }
 
-// #[derive(Clone, PartialEq, Deserialize)]
-// struct Tsemp {
-//     userId: i32,
-//     id: i32,
-//     title: String,
-//     completed: bool,
-// }
+#[derive(Clone, PartialEq, Deserialize)]
+struct Tsemp {
+    userId: i32,
+    id: i32,
+    title: String,
+    completed: bool,
+}
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -647,7 +647,7 @@ pub fn playlist() -> Html {
         // }}
         { for demo.into_iter().map(|e| {
             let navigator = navigator.clone();
-            let onclick = Callback::from(move |eve:MouseEvent| navigator.push(&Route::LiveNum{id:"?id=hyvgug".to_string()}));
+            let onclick = Callback::from(move |eve:MouseEvent| navigator.push(&Route::LiveNum{id:e.streamed_by.to_string()}));
 
             html!{
                 <div {onclick} class="stream-card">
