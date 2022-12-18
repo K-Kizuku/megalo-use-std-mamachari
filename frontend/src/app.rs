@@ -674,7 +674,6 @@ html!{
 //     // use_effect(move || {
 //     //     // Make a call to DOM API after component is rendered
 //     //     gloo::utils::document().set_title(&format!("You clicked {} times", *counter_one));
-
 //     //     // Perform the cleanup
 //     //     || gloo::utils::document().set_title(&format!("You clicked 0 times"))
 //     // });
