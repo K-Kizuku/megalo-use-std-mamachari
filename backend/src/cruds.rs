@@ -75,6 +75,20 @@ pub fn update_stream_flag(conn: &PgConnection, uid: &String) -> bool {
     };
 }
 
+pub fn finish_stream_flag(conn: &PgConnection, uid: &String) -> bool {
+    use crate::schema::users::dsl::*;
+    use crate::schema::streams::dsl::*;
+    use crate::models::User;
+    use crate::models::Stream;
+    let user = users.find(uid.clone()).first::<User>(conn).expect("Error user not found!");
+    let mut stream = streams.filter(is_streaming.eq(true)).filter(streamed_by.eq(uid)).first::<Stream>(conn).expect("Error: stream not found");
+    stream.is_streaming = false;
+    match  stream.save_changes::<Stream>(conn) {
+        Ok(_) => return true,
+        Err(_) => return false,
+    }
+}
+
 pub fn get_stream_by_id(conn: &PgConnection, sid: &str) -> crate::models::Stream {
     use crate::models::Stream;
     use crate::schema::streams::dsl::*;

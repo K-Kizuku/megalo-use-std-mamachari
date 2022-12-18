@@ -1,14 +1,13 @@
 use actix_web_httpauth::headers;
 use actix_web_httpauth::headers::www_authenticate::bearer;
 use chrono::NaiveDateTime;
-use diesel::deserialize;
 use log::info;
 use actix_web::{HttpRequest, HttpResponse, Responder, web, HttpResponseBuilder, get};
 use fireauth::FireAuth;
 use serde::{Deserialize,Serialize};
 use crate::db::establish_connection;
-use crate::cruds::{db_sign_in, create_new_stream, update_stream_flag, get_list_streams, get_stream_by_id};
-use crate::auth::*;
+use crate::cruds::{*, self};
+use crate::auth::minimal_auth;
 use uuid::Uuid;
 
 #[derive(Deserialize)]
@@ -93,7 +92,7 @@ pub async fn get_one_stream(path: web::Path<String>, request: HttpRequest) -> im
     };
     let id = path.into_inner();
     let conn = establish_connection();
-    let stream = get_stream_by_id(&conn, &id);
+    let stream = cruds::get_stream_by_id(&conn, &id);
     HttpResponse::Ok().json(stream)
 }
 
@@ -103,7 +102,7 @@ pub struct ModifyQuery {
     name: String,
 }
 
-#[get("/api/streams/modify")]
+#[get("/api/streams/publish")]
 pub async fn update_streaming(
     query: web::Query<ModifyQuery>,
     ) -> impl Responder {
@@ -121,6 +120,30 @@ pub async fn update_streaming(
         false => return HttpResponse::Unauthorized().finish(),
     };
     match update_stream_flag(&conn, &query.name) {
+        true => HttpResponse::Ok().body("OK"),
+        false => return HttpResponse::Unauthorized().finish(),
+    };
+    HttpResponse::Ok().body("OK")
+}
+
+#[get("/api/streams/dispublish")]
+pub async fn delete_streaming(
+    query: web::Query<ModifyQuery>,
+    ) -> impl Responder {
+    info!("app is {:?}, name is {:?}", query.app, query.name);
+    match query.app.as_str() {
+        "live" => (),
+        _=> return HttpResponse::Unauthorized().finish()
+    };
+    let api_key: String = std::env::var("FIREBASE_API").expect("FIREBASE_API does not exist !");
+    let auth = FireAuth::new(api_key);
+    let conn = establish_connection();
+    let name = &query.name;
+    match db_sign_in(&conn, name.clone()) {
+        true => (),
+        false => return HttpResponse::Unauthorized().finish(),
+    };
+    match finish_stream_flag(&conn, &query.name) {
         true => HttpResponse::Ok().body("OK"),
         false => return HttpResponse::Unauthorized().finish(),
     };
