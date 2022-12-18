@@ -1,5 +1,6 @@
 use chrono::Utc;
-use diesel::{RunQueryDsl, QueryDsl};
+use diesel::types::VarChar;
+use diesel::{RunQueryDsl, QueryDsl, sql_query};
 use diesel::pg::PgConnection;
 use uuid::Uuid;
 use diesel::prelude::*;
@@ -60,10 +61,13 @@ pub fn get_list_streams(conn: &PgConnection) -> Vec<crate::models::Stream> {
     streams.filter(is_streaming.eq_all(true)).load::<Stream>(conn).expect("Error failed all streams")
 }
 
-// pub fn update_stream_flag(conn: &PgConnection, id: String) {
+// pub fn update_stream_flag(conn: &PgConnection, uid: String) -> crate::models::Stream {
 //     use crate::schema::streams::dsl::*;
+//     use crate::schema::users::dsl::*;
+//     use crate::models::User;
 //     use crate::models::Stream;
-//     let stream = streams.filter(is_streaming.eq_all(true))
+//     let user = users.find(uid.clone()).first::<User>(conn).expect("Error user not found!");
+//     let stream = streams.order_by(created_at.desc()).limit(1).filter(streamed_by.eq(uid));
 // }
 
 pub fn get_stream_by_id(conn: &PgConnection, sid: &str) -> crate::models::Stream {
